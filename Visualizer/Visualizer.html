@@ -1,0 +1,33 @@
+<html>
+<head>
+	<title>Algorithm Visualizations</title>
+	<link rel="stylesheet" href="./visualizer_style.css">
+</head>
+<body>
+	<div>
+		Branching Factor:
+		<input type="range" id="branching" min="1" max="9">
+		Depth:
+		<input type="range" id="depth" min="0" max="10">
+		<input type="button" id="bfs_start_button" value="Breadth First Search">
+		<br>
+		Graph Density:
+		<input type="range" id="density" min="10" max="200" step="10" disabled="true">
+		Window Width:
+		<input type="range" id="window_width" min="400" max="2000" step="100">
+		<br>
+		Node Size:
+		<input type="range" id="node_size" min="1" max="10">
+		Speed:
+		<input type="range" id="speed" min="0" max="490">
+		<br>
+	</div>
+	<div>
+		<canvas id="viewport" width="1500" height="600" style="border:1px solid #000000;">
+		</canvas>
+	</div>
+
+	<script type="text/javascript" src="tree.js"></script>
+	<script type="text/javascript" src="visualizer.js"></script>
+</body>
+</html>
