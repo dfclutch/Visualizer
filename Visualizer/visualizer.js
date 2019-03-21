@@ -71,6 +71,9 @@ let branching_factor_element = document.getElementById("branching");
 let branching_factor = branching_factor_element.valueAsNumber;
 branching_factor_element.addEventListener("change", branching_factor_update, false);
 
+let dfs_start_button = document.getElementById("dfs_start_button");
+dfs_start_button.addEventListener("click", dfs_animation, false);
+
 let depth_element = document.getElementById("depth");
 let depth = depth_element.valueAsNumber;
 depth_element.addEventListener("change", depth_update, false);

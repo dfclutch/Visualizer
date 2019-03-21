@@ -73,7 +73,7 @@ function draw_tree(nodes) {
 }
 
 /* 
-* animation for breadth first searching algorithm
+* animation for breadth first searching algorithm on a tree
 */
 function bfs_animation() {
 	generate_new_tree();
@@ -128,6 +128,78 @@ function bfs_animation() {
 				let current_child_coord = node_center_list[current_child_index];
 				//add child to open set
 				open_set.push({
+					node_coord: current_child_coord,
+					parent: current_node,
+					index: current_child_index
+				});
+			}
+
+			//repaint viewed nodes green and add most recent to closed set
+			paint_set(GREEN, closed_set)
+			closed_set.push(current_node_coord);
+
+		} else {
+			return;
+		}
+	}, speed);
+}
+
+/* 
+* animation for depth first searching algorithm on a tree
+*/
+function dfs_animation() {
+	generate_new_tree();
+	draw_tree(node_center_list);
+	//get index of first entry of bottom row
+	let first_index_in_bottom_row = 0;
+	for (var d=0; d<depth - 1; d++) {
+		first_index_in_bottom_row = (first_index_in_bottom_row * branching_factor) + 1;
+	}
+	//add rand number between 0 and number of nodes in bottom row to pick a random node from last row
+	let goal_index = first_index_in_bottom_row +
+	 Math.floor(Math.random() * (Math.pow(branching_factor, depth-1))); 
+
+	//draw goal square red
+	draw_square(RED, node_center_list[goal_index][0], node_center_list[goal_index][1]);
+
+	let i = 0;
+	let open_set = [];
+	let closed_set = [];
+	let goal_not_found = true;
+
+	open_set.unshift({
+		node_coord: node_center_list[0], //add root to open set
+		parent: null,
+		index: 0
+	})
+
+
+	let flag = true;
+
+	//animation function acts as main loop for BFS
+	setInterval( function() {
+		if(flag && open_set.length > 0) {
+			let current_node = open_set.shift();
+			let current_node_coord = current_node.node_coord;
+			let current_node_index = current_node.index;
+
+			//highlight current node
+			draw_square(BLUE, current_node_coord[0], current_node_coord[1]);
+
+			if (current_node_index == goal_index) {
+				//if reached goal node
+				paint_set(ORANGE, find_path_set(open_set, current_node));
+				closed_set.push(current_node_coord);
+				flag = false;
+				console.log(current_node);
+				return;
+			}
+			//add branching_factor number children to open set
+			for (let j=branching_factor;j>0;j--) {
+				let current_child_index = (branching_factor * current_node_index) + j;
+				let current_child_coord = node_center_list[current_child_index];
+				//add child to open set
+				open_set.unshift({
 					node_coord: current_child_coord,
 					parent: current_node,
 					index: current_child_index
