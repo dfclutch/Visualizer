@@ -1,5 +1,5 @@
 # Visualizer
-### Author: Dan Filler c. 3/2019
+### Author: Dan Filler 3/2019
 
 Description: A front-end javascript based interactive animation that illustrates several basic computer science algorithms. 
 Note: Don't use this as an example of how to write javascript. I've got global variables floating around, functions that take 4-parameters, nothing encapsulated into any kind of class, just pure sloppy functional vanilla javascript.

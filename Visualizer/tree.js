@@ -4,13 +4,6 @@
 * Author: Dan Filler 3.2019
 */
 
-/* 
-* creates a new tree represented by coordinates in node_center_list
-* based on the current properties of the visualization
-*
-* clears node_center_list
-*/
-
 /*
 * COLOR DEFINITIONS
 */
@@ -22,7 +15,12 @@ let ORANGE = "#ffd11c";
 let WHITE = "#FFFFFF";
 
 /***************      TREE GENERATION     ***************/
-
+/* 
+* creates a new tree represented by coordinates in node_center_list
+* based on the current properties of the visualization
+*
+* clears node_center_list
+*/
 function generate_new_tree() {
 	node_center_list.length = 0;
 	let num_of_nodes = 0;
@@ -120,7 +118,7 @@ function bfs_animation() {
 				paint_set(GREEN, closed_set)
 				//paint successful path orange
 				paint_set(ORANGE, find_path_set(open_set, current_node));
-
+				//end animation
 				clearInterval(bfs_animation_timer);
 				return;
 			} else if (current_node_index > num_of_nodes) {
@@ -144,11 +142,6 @@ function bfs_animation() {
 			paint_set(ORANGE, find_path_set(open_set, current_node));
 			closed_set.push(current_node_coord);
 		} 
-
-		if (kill_animations) {
-			clearInterval(bfs_animation_timer);
-		}
-
 	}, speed);
 }
 
@@ -219,11 +212,6 @@ function dfs_animation() {
 			closed_set.push(current_node_coord);
 
 		} 
-		if(kill_animations) {
-			console.log("here");
-			//when animations are killed, clear timer
-			clearInterval(dfs_animation_timer);
-		}
 	}, speed);
 }
 
@@ -240,6 +228,7 @@ function minimax_animation() {
 	let node_values = []; 
 	let selected_nodes = [node_center_list[0]];
 
+	//populate node_values minimax result
 	create_minimax_tree(node_values, selected_nodes);
 
 	let num_of_nodes = generate_new_tree();
@@ -283,6 +272,7 @@ function minimax_animation() {
 				//repaint closed set (viewed nodes)
 				paint_set_with_text(GREEN, completed_nodes)
 				paint_set(BLUE, selected_nodes);
+				//end animation
 				clearInterval(minimax_animation_timer);
 				return;
 			} 
@@ -310,16 +300,13 @@ function minimax_animation() {
 			//paint current search trace
 			paint_set(ORANGE, current_path_set);
 
-		} 
-
-		if(kill_animations) {
-			clearInterval(minimax_animation_timer)
 		}
 
 	}, speed);
 }
 
 /***************      HELPER FUNCTIONS FOR MAIN ANIMATIONS      ***************/
+
 function add_completed_nodes(current_node, search_set, completed_nodes, node_values) {
 	let has_new_occurence = false;
 	if (current_node.depth == depth) {

@@ -14,11 +14,7 @@ var context = canvas.getContext("2d");
 /* create list of node centers for graph */
 let node_center_list = [];
 
-/*queue of running animations, length should usually be 1*/
-let animation_queue = [];
-
-let kill_animations = false;
-
+/*list of animations to be ended by end animations, this is a terrible way to do it*/
 let bfs_animation_timer, dfs_animation_timer, minimax_animation_timer;
 
 /**********			Main Graphics Functions		**********/
