@@ -20,7 +20,7 @@ let WHITE = "#FFFFFF";
 * based on the current properties of the visualization
 *
 * clears node_center_list
-*/
+*/ 
 function generate_new_tree() {
 	node_center_list.length = 0;
 	let num_of_nodes = 0;
@@ -231,6 +231,7 @@ function minimax_animation() {
 	//populate node_values minimax result
 	create_minimax_tree(node_values, selected_nodes);
 
+	//create and draw new tree for animation
 	let num_of_nodes = generate_new_tree();
 	draw_tree(node_center_list);
 
@@ -264,11 +265,13 @@ function minimax_animation() {
 				add_completed_nodes(current_node, closed_set, completed_nodes, node_values);
 			}
 
-			if (current_node_depth == depth) {
+			if (current_node_depth - 1 == depth) {
 				return;
 			}
-
-			if (current_node_index == num_of_nodes - 1) {
+			//if past the end of the set
+			if (current_node_index + 1 == num_of_nodes) {
+				console.log("here")
+				draw_tree(node_center_list);
 				//repaint closed set (viewed nodes)
 				paint_set_with_text(GREEN, completed_nodes)
 				paint_set(BLUE, selected_nodes);
@@ -308,9 +311,11 @@ function minimax_animation() {
 /***************      HELPER FUNCTIONS FOR MAIN ANIMATIONS      ***************/
 
 function add_completed_nodes(current_node, search_set, completed_nodes, node_values) {
+	if(current_node.parent == null) { //if its the root node
+		return;
+	}
 	let has_new_occurence = false;
 	if (current_node.depth == depth) {
-
 		current_node.completed = true;
 		has_new_occurence = true;
 
@@ -322,8 +327,7 @@ function add_completed_nodes(current_node, search_set, completed_nodes, node_val
 	} 
 	if (!current_node.parent.completed) {
 		if (current_node.completed && current_node.index == current_node.parent.max_child ) {
-
-			current_node.parent.completed == true;
+			current_node.parent.completed = true;
 
 			completed_nodes.push({
 					coord: current_node.parent.node_coord,

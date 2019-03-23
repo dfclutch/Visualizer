@@ -181,6 +181,9 @@ depth_element.value = depth = 6;
 let top_and_bottom_margin = 15;
 stretch_height = Math.floor((canvas.height - top_and_bottom_margin) / depth);
 
+window_width_element.value = canvas.width = 1200;
+
+
 node_size_element.value = node_size = 6;
 speed = 100;
 speed_element.value = 400;
