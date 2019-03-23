@@ -4,6 +4,8 @@
 	<link rel="stylesheet" href="./visualizer_style.css">
 </head>
 <body>
+	<h1>Algorithms you learn as a freshman</h1>
+	<p>watch sliding the branching factor too high with the depth past ~2</p>
 	<div>
 		Branching Factor:
 		<input type="range" id="branching" min="1" max="9">
@@ -21,10 +23,12 @@
 		<input type="range" id="node_size" min="1" max="10">
 		Speed:
 		<input type="range" id="speed" min="0" max="490">
+		<input type="button" id="mini_start_button" value="Minimax">
+		<br>
 		<br>
 	</div>
 	<div>
-		<canvas id="viewport" width="1500" height="600" style="border:1px solid #000000;">
+		<canvas id="viewport" width="1500" height="500" style="border:1px solid #000000;">
 		</canvas>
 	</div>
 
