@@ -4,34 +4,205 @@
 	<link rel="stylesheet" href="./visualizer_style.css">
 </head>
 <body>
-	<h1>Algorithms you learn as a freshman</h1>
-	<p>watch sliding the branching factor too high with the depth past ~2</p>
-	<div>
-		Branching Factor:
-		<input type="range" id="branching" min="1" max="9">
-		Depth:
-		<input type="range" id="depth" min="0" max="10">
-		<input type="button" id="bfs_start_button" value="Breadth First Search">
-		<br>
-		Graph Density:
-		<input type="range" id="density" min="10" max="200" step="10" disabled="true">
-		Window Width:
-		<input type="range" id="window_width" min="400" max="2000" step="100">
-		<input type="button" id="dfs_start_button" value="Depth First Search">
-		<br>
-		Node Size:
-		<input type="range" id="node_size" min="1" max="10">
-		Speed:
-		<input type="range" id="speed" min="0" max="490">
-		<input type="button" id="mini_start_button" value="Minimax">
-		<br>
-		<br>
+	<div class="title_blocK">
+		<h1>Graph Algorithms</h1>
+		<p>
+			<a class="in_text" href= https://github.com/dfclutch/Visualizer>Code and some tips on using the animation located here</a>, more tips at the bottom of this page
+		</p>
 	</div>
+	<div class="controls">
+		<div class="control_block">
+			<div class="control_set">
+				<h3>Graph Controls</h3>
+				<div class="control_pair">
+					Branching Factor:
+					<input class="slider" type="range" id="branching" min="1" max="9">
+					<br>
+				</div>
+				<div class="control_pair">
+					Graph Density: (disabled)
+					<input class="slider" type="range" id="density" min="10" max="200" step="10" disabled="true">
+					<br>
+				</div>
+				<div class="control_pair">
+					Node Size:
+					<input class="slider" type="range" id="node_size" min="1" max="10">
+					<br>
+				</div>
+			</div>
+			<div class="control_set">
+				Depth:
+				<input class="slider" type="range" id="depth" min="0" max="10">
+				<br>
+				Window Width:
+				<input class="slider" type="range" id="window_width" min="400" max="2000" step="10">
+				<br>
+				Speed:
+				<input class="slider" type="range" id="speed" min="0" max="490">
+				<br>
+			</div>
+		</div>
+		<div class="control_block">
+			<div class="control_set">
+				<h3>Run Algorithms</h3>
+				</br>
+				<input class="control_button" type="button" id="bfs_start_button" value="Breadth First Search">
+				<br>
+				<input class="control_button" type="button" id="dfs_start_button" value="Depth First Search">
+				<br>
+				<input class="control_button" type="button" id="mini_start_button" value="Minimax">
+				<br>
+			</div>
+			<br>
+		</div>
+		<div class="control_block">
+			<div class="control_set">
+				<h3>Graph Type (disabled)</h3>
+				<br>
+				<input type="radio" name="graph_type" value="tree" checked="checked">
+				Tree
+				<br>
+				<input type="radio" name="graph_type" value="rand_tree"> 
+				Random Tree
+				<br>
+				<input type="radio" name="graph_type" value="random"> 
+				Random
+				<br>
+				<input type="radio" name="graph_type" value="edge_weighted"> 
+				Edge Weigthed
+				<br>
+				<input type="radio" name="graph_type" value="network"> 
+				Network
+				<br>
+				<input type="radio" name="graph_type" value="colored"> 
+				Colored
+				<br>
+			</div>
+		</div>		
+	</div>
+
 	<div>
-		<canvas id="viewport" width="1500" height="500" style="border:1px solid #000000;">
+		<canvas id="viewport" width="1500" height="500">
 		</canvas>
 	</div>
 
+	<div class="info">
+		<div class="info_block">
+			<h3>Tips:</h3> 
+			<ul>
+				<li>
+					The graph won't update until you release the slider you are currently changing
+				</li>
+				<li>
+					Changing any setting witll end the current animation and you will need to start a new one
+				</li>
+				<li>
+					Before bringing up the branching factor, lower the depth almost to 0
+				</li>
+				<li>
+					If you set the branching factor to 2 you can take the depth all the way up pretty smoothly (lower the node size). No higher branching factor, even 3, will make it past a depth of about 6 before crashing/slowing down a lot
+				</li>
+				<li>
+					lower the depth and speed, increase node size to get an actual understanding of the algorithms
+				</li>
+				<li>
+					Minimax doesn't really work with higher depth or branching factor, use the biggest nodes you can
+				</li>
+			</ul>
+		</div>
+		<div class="info_block">
+			<h3>Future Plans:</h3> 
+			<ul>
+				<li>
+					Algorithms: Alpha-beta pruning minimax layer, informed searches (A* first probably), colorings, max flow, clique/independent set
+				</li>
+				<li>
+					Graph Types: 
+					<ul>
+						<li>
+							Random tree: tree where each node has between 0 and n (set by branching factor) children until max depth
+						</li>
+						<li>
+							Random: Non-directional, uniform edge weighted graph of nodes connected by edges, the percentage of possible edges present in the graph is set by graph density slider
+						</li>
+						<li>
+							Edge-weighted: Random graph with edge weights, edge weights are determined randomly over a range determined by the algorithm using the tree
+						</li>
+						<li>
+							Network: Edge weighted graph with directional edges
+						</li>
+						<li>
+							Colored: Graph whose nodes can be colored, colorings enforced by algorithm
+						</li>
+					</ul>
+				</li>
+				<li>
+					Improvements:
+					<ul>
+						<li>
+							Update graph as settings are changed, not upon release
+						</li>
+						<li>
+							Live update animations to match new settings instead of killing animation
+						</li>
+						<li>
+							Improved information on what's actually happening in the animations
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<div class="info_block">
+			<h3>Frequently Asked Questions (non-CS people)</h3> 
+			<ul>
+				<li>
+					<strong>What is a Graph?</strong><br>
+					<p>Graphs are the main area of interest for a field of mathematics known as <a class="in_text" href="https://en.wikipedia.org/wiki/Graph_theory">graph theory.</a> Graphs are often drawn as a set of nodes with edges or lines connecting them. A common example of an application of a graph: 
+					</p>
+					<p>
+					Consider a graph where each node represents a state and the nodes connected to it represent a different state whose conditions can be reached in a single movement. More plainly, consider a person who has been given x number of choices. Each choice has a result. The original state is one node and the results of the choices are all connected to it (i.e. making that choice results in moving to that node). The connectors or edges can be though of as representing a movement down that choice path.
+					</p>
+					<p>
+					Now consider using a graph to represent a real situation instead of all the hypotheticals above. Representing real would situations in a way that can be modeled easily in a graph like this is not trivial, and often very difficult. However, it has been found that using graphs to model situations is occasionally the best way.
+					</p>					
+				</li>
+				<li>
+					<strong>What is Search?</strong><br>
+					<p>One place where graphs excel at representing real situations is searching ahead. In the visualizations above, when running a search algorithm, the computer is "searching" for a randomly placed red node (on the bottom row of the tree). It doesn't know where the node is ahead of time so it essentially has to solve a maze to find it. The difference between <a class="in_text" href="https://en.wikipedia.org/wiki/Breadth-first_search">Breadth First</a> searching and <a class="in_text" href="https://en.wikipedia.org/wiki/Depth-first_search">Depth First</a> search is essentially basically in what order they look at the possible choices to find the goal node.
+					</p>
+				</li>
+				<li>
+					<strong>So what's the point of this website?</strong><br>
+					<p>
+						Well there isn't a lot of one. I just wanted to write some interesting code that actually has a visible interesting result. The design choices made when writing this occur for somewhat absure reasons, if you want to know what they are, read the CS FAQ below.
+					</p>
+				</li>				
+			</ul>
+		</div>
+		<div class="info_block">
+			<h3>Frequently Asked Questions (CS people)</h3> 
+			<ul>
+				<li>
+					<strong>How is this implemented?</strong><br>
+					<p>
+						If you look at the <a class="in_text" href= https://github.com/dfclutch/Visualizer>code</a> you will see this is just html, css, and javascript (css is just for styling though nothing to do with the animation). It is complete vanilla JS with no libraries. The Canvas API is provided standard by all modern browsers and HTML 5, so I consider it a part of vanilla JS. 
+					</p>
+					<p>
+						In terms of how I implemented the animations, you can read the code (or try at least it's not well written right now) for specifics. I will sumarize it here. Basically, the animations are generated by actually running iterative versions of the algorithms. To animate BFS, I use a setInterval call in javascript with the delay set by the speed slider. This runs the algorithm and paints the graph according to the changing state of the algorithm.
+					</p>
+					<p>
+						To support this, I wrote a set of graphics utilities that allow for generation of a new graph to match the settings on command, ways to paint a set of points, the addition of text to the points, etc. 
+					</p>					
+				</li>
+				<li>
+					<strong>Why did you choose to write it that way?</strong><br>
+					<p>
+						Money, mostly. I can host frontend JS on Github Pages for free and you can do a lot with just vanilla JS on the front end. It's not really efficient at all but it'll get there sometime probably.
+					</p>
+				</li>				
+			</ul>
+		</div>
+	</div>
 	<script type="text/javascript" src="tree.js"></script>
 	<script type="text/javascript" src="visualizer.js"></script>
 </body>

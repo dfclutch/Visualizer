@@ -1,0 +1,138 @@
+/* controller styling */
+.controls {
+	background-color: #ffffff;
+	color: #333;
+	font-family: sans-serif;
+	margin: 5px 0px;
+	padding: 5px;
+	border-radius: 10px;
+	display: block;
+	float: left;
+	width: 80%;
+}
+
+.control_set {
+	padding: 2px 8px;
+	border-radius: 4px;
+	display: inline-block;
+	text-orientation: right;
+	height: 100%;
+}
+
+.control_button {
+	margin: 8px;
+	padding: 2px;
+	border: 0;
+	background-color: #b23737;
+	box-shadow: none;
+	border-radius: 0px;
+	font-family: sans-serif;
+	width: 150px;
+	text-align: center;
+	color: #fff;
+}
+
+.control_button:hover {
+	background-color: #eee;
+	color: #000;
+}
+
+.control_block {
+	background-color: #ffffff; 
+	display: inline-block;
+	float: left;
+	margin: 10px;
+	padding-bottom: 5px;
+	border-radius: 6px;
+	height: 200px;
+}
+
+/* slider */
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 2px;
+  background: #333;
+  outline: none;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  margin: 10px 0px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #b23737;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #b23737;
+  cursor: pointer;
+}
+
+/* title block */
+.title_block {
+	font-family: sans-serif;
+	background-color: #ffffff;
+	color: #333;
+	margin: 5px 0px;
+	padding: 5px 10px;
+	border-radius: 10px;
+}
+
+a.in_text {
+	color: #b23737;
+}
+a.in_text:link {
+	color: #b23737;
+}
+a.in_text:visited {
+	color: #b23737;
+}
+a.in_text:active {
+	color: #b23737;
+}
+a.in_text:hover {
+	color: #b23737;
+}
+
+#info {
+	width: 400px;
+}
+
+/* canvas */
+canvas {
+	border-radius: 10px;
+	border: 2px solid #000;
+}
+
+/* info section */
+.info {
+	background-color: #ffffff;
+	color: #333;
+	font-family: sans-serif;
+	margin: 5px 0px;
+	padding: 5px;
+	border-radius: 10px;
+	display: block;
+	float: left;
+	width: 100%;
+}
+
+.info_block {
+	background-color: #ffffff; 
+	display: inline-block;
+	float: left;
+	margin: 10px;
+	padding-bottom: 5px;
+	border-radius: 6px;
+	padding: 0px 10px;
+	max-width: 100%;
+}
