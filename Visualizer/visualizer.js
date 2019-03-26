@@ -1,8 +1,5 @@
 /*
-* Main JS file for running the minimax/alpha beta pruning visualization
-* Note: This is not a good way to write javascript or a fast
-* way to implement these algorithms. This is just an educational
-* Visualization
+* Main animation processing
 *
 * Author: Dan Filler 3.19
 */
@@ -11,20 +8,61 @@
 var canvas = document.getElementById("viewport"); 
 var context = canvas.getContext("2d");
 
-/* create list of node centers for graph */
-let node_center_list = [];
+/* 
+* create list of nodes and edges for graph where entries are 
+* [node/edge_set, {color_set or color}, {text_set}] groups 
+*/
+let god_nodes = [];
+let god_edges = [];
 
-/* list of edges of graph specified by order pair of indices in node_center_list */
-let edges = [];
+/* 
+* Frames - an array representing a graph state at a single time 
+* Entries are [node_set, edge_set] pairs where node_set and edge_set 
+* are valid node/edge sets consisting of coordinates, colors, and text
+*/
+let frames = [];
 
-/*list of animations to be ended by end animations, this is a terrible way to do it*/
-let bfs_animation_timer, dfs_animation_timer, minimax_animation_timer;
+/* main animation */
+let animation;
 
 
 /**********			Main Graphics Engine			**********/
-/* A basic Graphics Engine for animating and drawing graphs
+/* 
+* A basic Graphics Engine for animating and drawing graphs
 * Comprised of generic functions that get populated by calls to specific animation functions
 */
+
+/*
+* Main animation function, calls draw_node_set and draw_edge_set based on the contents
+* of node_sets and edge_sets
+*
+* Prior to this function running (or concurrently)
+*/
+function animation_update() {
+	let frame_index = 0;
+	animation = setInterval( function() {
+		if (frame_index < frames.length) {
+			let current_frame = frames[frame_index];
+			let node_sets = current_frame[0];
+			let edge_sets = current_frame[1];
+			for (node_set in node_sets) {
+				draw_node_set(node_set[0], node_set[1], node_set[2]);
+			}
+			for (edge_set in edge_sets) {
+				draw_edge_set(edge_set[0], edge_set[1], edge_set[2]);
+			}
+		} else {
+			clearInterval(animation);
+		}
+	}, speed);
+}
+
+/*
+* ends currently running animation for updates
+*/
+function end_animation() {
+	clearInterval(animation);
+}
 
 /*
 * Draws a set of nodes in a set of colors, with an optional set of text
@@ -41,16 +79,22 @@ let bfs_animation_timer, dfs_animation_timer, minimax_animation_timer;
 *	optional: if typeof text is array: then text[i] is attached to nodes[i] for each 0 <= i < nodes.length
 *	otherwise if typeof text is undefined: then the text of the square representing nodes[i] has no text
 */
-function draw_nodes(nodes, colors, text) {
+function draw_node_set(nodes, colors, text) {
 	context.clearRect(0,0,canvas.width, canvas.height);
 	context.beginPath();
-	//don't know why this broke when using a for/in loop, so I'm using this mess
-	for(var i=0;i<nodes.length;i++) {
-		let current_coord;
-		let current_color;
-		let current_text;
-		if(typeof colors == "string") {
-
+	if (typeof colors == "array") {
+		if(typeof text =="array") {
+			for (var i=0;i<nodes.length;i++) {
+				draw_node(nodes[i], colors[i], text[i]);
+			}
+		} else {
+			for (var i=0;i<nodes.length;i++) {
+				draw_node(nodes[i], colors[i]);
+			}
+		}
+	} else {
+		for(var i=0; i<nodes.length; i++) {
+			draw_node(nodes[i], colors);
 		}
 	}
 }
@@ -60,7 +104,7 @@ function draw_nodes(nodes, colors, text) {
 
 * - edges:
 *	set of ordered pairs [node1, node2] representing the edge of a graph spanning between
-*	node1 and node2
+*	node1 and node2 where node1 and node2 are [x_coord, y_coord] ordered pairs
 * - colors:
 * 	optional type: if typeof colors is array: then {edges[i]} is of color {edges[i]} 
 *	for each 0 <= i < edges.length
@@ -70,42 +114,83 @@ function draw_nodes(nodes, colors, text) {
 *	optional: if typeof text is array: then text[i] is attached to edges[i] for each 0 <= i < edges.length
 *	otherwise if typeof text is undefined: then the text of the edge representing edges[i] has no text
 */
-function draw_edge_set(edge_set, colors, text) {	
+function draw_edge_set(edges, colors, text) {
 	context.lineWidth = .5;
-	if (typeof colors == "array" || typeof text == "array") {
-		//if each needs customization
+	if(typeof colors == "array") {
+		if (typeof text == "array"){
+			for (var i=0; i<edges.length; i++) {
+				let node1 = edges[i][0];
+				let node2 = edges[i][1];
+				draw_edge(node1, node2, colors[i], text[i]);
+			}
+		} else {
+			for (var i=0; i<edges.length; i++) {
+				let node1 = edges[i][0];
+				let node2 = edges[i][1];
+				draw_edge(node1, node2, colors[i]);
+			}
+		}
+	} else {
 		for (var i=0; i<edges.length; i++) {
-			let node1 = edge_set[i][0];
-			let node2 = edge_set[i][1];
-			context.moveTo(node1[0], node1[1]);
-			context.lineTo(node2[0], node2[1]);
-			context.fillStyle = color;
-			context.stroke();
+				let node1 = edges[i][0];
+				let node2 = edges[i][1];
+				draw_edge(node1, node2, colors);
 		}
 	}
 }
 
 /*
-* Draws a square in color centered at center_x, center_y of side node_size x node_size
+* Draws a square in color centered at node [x, y] of side node_size x node_size
+* in color with optional text
 *
+* - node:
+*	(int, int) pair representing coordinate of the center of the square to be drawn
 * - color:
 *	string representing color in hex or rgba e.g. "#______" or "rgba{_,_,_,_}"
-* - coord:
-*	(int, int) pair representing coordinate of the center of the square to be drawn
+* - text:
+*	optional: if typeof text == string: then node has text {text} attached
+*	else: node has no text
 */
-function draw_square(node, color, text) {
+function draw_node(node, color, text) {
 	context.fillStyle = color;
-	let min_x = coord[0] - node_size;
-	let min_y = coord[1] - node_size;
-	context.clearRect(min_x, min_y, node_size * 2, node_size * 2)
-	context.beginPath();
+	let min_x = node[0] - node_size;
+	let min_y = node[1] - node_size;
 	context.fillRect(min_x, min_y, node_size * 2, node_size * 2)
 
-	context.font = (node_size * 3).toString() + "px Arial";
-	context.fillStyle = color;
-	context.textAlign = "center";
+	// if (typeof text != "undefined"); {
+	// 	context.font = (node_size * 3).toString() + "px Arial";
+	// 	context.textAlign = "center";
+	// 	context.fillText(text, node[0] - 3 * node_size, node[1] + node_size);
+	// }
+}
 
-	context.fillText(text, node[0] - 3 * node_size, node[1] + node_size);
+/*
+* Draws an edge in color centered at from coordinates of node1 to node2 in color
+* with optional text
+*
+* - node:
+*	(int, int) pair representing coordinate of the center of the square to be drawn
+* - color:
+*	string representing color in hex or rgba e.g. "#______" or "rgba{_,_,_,_}"
+* - text:
+*	optional: if typeof text == string: then edge has text {text} attached
+*	else: edge has no text
+*/
+function draw_edge(node1, node2, color, text) {
+	context.lineWidth = .5;
+	context.moveTo(node1[0], node1[1]);
+	context.lineTo(node2[0], node2[1]);
+	context.fillStyle = color;
+	context.stroke();
+
+	if (typeof text == "string") {
+		context.font = (node_size * 3).toString() + "px Arial";
+		context.textAlign = "center";
+		context.fillText(
+			text, Math.floor((node1[0] + node2[0])/2) - 20, 
+			Math.floor((node1[1] + node2[1])/2)
+		);
+	}
 }
 
 /*
@@ -118,68 +203,6 @@ let GREEN = "#28d67c";
 let ORANGE = "#ffd11c";
 let WHITE = "#FFFFFF";
 
-/**********			Main Graphics Functions		**********/
-
-
-
-function draw_square_with_text(color, text, node) {
-	draw_square(color, node);
-	
-}
-
-/* 
-* Paints node_set in color
-*  - nodes:
-*		array specifiying set of nodes to be painted
-*  - color:
-*		rgba/hex value to paint nodes to
-*/
-function paint_set(color, nodes) {
-	
-}
-
-/* 
-* Paints node_set in color with text attached to nodes
-*  - node_set:
-*		array specifiying set of nodes to be painted and text
-*  - color:
-*		rgba/hex value to paint nodes to
-*/
-function paint_set_with_text(color, nodes) {
-	//don't know why this broke when using a for/in loop, so I'm using this mess
-	for(var i=0;i<nodes.length;i++) {
-		let node = nodes[i];
-		draw_square_with_text(color, node.text, node.coord);
-	}
-}
-
-function end_animations() {
-	clearInterval(bfs_animation_timer);
-	clearInterval(dfs_animation_timer);
-	clearInterval(minimax_animation_timer);
-	draw_tree(node_center_list);
-}
-
-/* determines which set of calls to make to generate a tree of the currently
-* selected graph type.
-*/
-function draw_new_canvas() {
-	switch(graph_type) {
-	  case "tree":
-		generate_new_tree();
-	    break;
-	  case "random":
-	    generate_new_graph();
-	    break;
-	  default:
-	    // code block
-	}
-
-    draw_nodes(BLACK, node_center_list);
-    draw_edge_set(BLACK, edges);
-}
-
-
 /**********			Option updates			**********/
 
 /*
@@ -187,41 +210,45 @@ function draw_new_canvas() {
 */
 branching_factor_update = function() {
     branching_factor = branching_factor_element.valueAsNumber;
-   	end_animations();
-   	draw_new_canvas();
+   	end_animation();
+   	generate();
+   	draw_node_set(god_nodes, BLACK);
+   	draw_edge_set(god_edges, BLACK);
 }
 
 depth_update = function() {
     depth = depth_element.valueAsNumber;
     stretch_height = canvas.height / depth;
-   	end_animations();
-   	draw_new_canvas();
+   	end_animation();
+   	generate();
+   	draw_node_set(god_nodes, BLACK);
+   	draw_edge_set(god_edges, BLACK);
 }
 
 density_update = function() {
     density = density_element.valueAsNumber;
    	end_animations();
     generate_new_edge_set();
-    draw_graph(BLACK, node_center_list);
-    draw_edge_set(BLACK, edges);
+    draw_edge_set(god_edges, BLACK);
 }
 
 window_width_update = function() {
 	canvas.width = window_width_element.valueAsNumber;
    	end_animations();
-   	draw_new_canvas();
+   	generate();
+   	draw_node_set(god_nodes, BLACK);
+   	draw_edge_set(god_edges, BLACK);
 }
 
 node_size_update = function() {
 	node_size = node_size_element.valueAsNumber;
    	end_animations();
-   	draw_graph(BLACK, node_center_list);
+   	draw_node_set(god_nodes, BLACK);
 }
 
 speed_update = function() {
 	speed = 500 - speed_element.valueAsNumber;
    	end_animations();
-   	draw_graph(BLACK, node_center_list);
 }
 
 graph_type_update = function() {
@@ -231,8 +258,10 @@ graph_type_update = function() {
 			graph_type = option.value;
 		}
 	}
-   	end_animations();
-   	draw_new_canvas();
+	end_animations();
+	generate();
+	draw_node_set(god_nodes);
+	draw_edge_set(god_edges);
 }
 
 
@@ -275,7 +304,7 @@ let speed = speed_element.valueAsNumber;
 speed_element.addEventListener("change", speed_update, false);
 
 let mini_start_button = document.getElementById("mini_start_button");
-mini_start_button.addEventListener("click", minimax_animation, false);
+//mini_start_button.addEventListener("click", minimax_animation, false);
 
 let graph_type_elements= document.getElementsByName("graph_type");
 let graph_type = "tree";
@@ -287,8 +316,24 @@ for (var i =0;i<graph_type_elements.length; i++) {
 	option.addEventListener("change", graph_type_update, false);
 }
 
-/**********			Animation Button Handlers			**********/
+/**********			Option Muliplexers			**********/
+
+function generate() {
+	switch(graph_type) {
+		case "tree":
+			generate_tree();
+			generate_tree_edges();
+			break;
+		case "random": 
+			generate_graph();
+			generate_edge_set();
+			break;
+		default:
+	}
+}
+
 function bfs_animation() {
+	end_animations();
 	switch(graph_type) {
 		case "tree":
 			tree_bfs_animation();
@@ -301,6 +346,7 @@ function bfs_animation() {
 }
 
 function dfs_animation() {
+	end_animations();
 	switch(graph_type) {
 		case "tree":
 			tree_dfs_animation();
@@ -334,6 +380,7 @@ graph_type = "tree";
 
 // load initial visual
 window.onload = function() {
-	generate_new_tree();
-	draw_tree(node_center_list);
+	generate();
+	draw_node_set(god_nodes, BLACK);
+	draw_edge_set(god_edges, BLACK);
 }

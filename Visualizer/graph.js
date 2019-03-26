@@ -10,7 +10,7 @@
 
 /***************      GRAPH GENERATION     ***************/
 
-function generate_new_graph() {
+function generate_graph() {
 	node_center_list.length = 0;
 	let num_of_nodes = branching_factor * depth;
 
@@ -18,13 +18,11 @@ function generate_new_graph() {
 		let new_x_coord = Math.floor((Math.random() * (canvas.width - 50) * 20 + 50) / 20);
 		let new_y_coord = Math.floor((Math.random() * (canvas.height - 50) * 10 + 50) / 10);
 		let new_coord = [new_x_coord, new_y_coord];
-		node_center_list.push(new_coord);
+		god_nodes.push(new_coord);
 	}
-
-	generate_new_edge_set();
 }
 
-function generate_new_edge_set() {
+function generate_edge_set() {
 	edges.length = 0;
 	for(var i=0; i<node_center_list.length; i++) {
 		let current_node = node_center_list[i];
@@ -33,7 +31,7 @@ function generate_new_edge_set() {
 		for (var j=0; j<num_connected; j++){
 			let connected_node = node_center_list[Math.floor(Math.random() * node_center_list.length)];
 			//add num_connected number of connected nodes to edges list
-			edges.push([current_node, connected_node]);
+			god_edges.push([current_node, connected_node]);
 		}
 	}
 }
