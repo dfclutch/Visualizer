@@ -20,8 +20,8 @@
 					<br>
 				</div>
 				<div class="control_pair">
-					Graph Density: (disabled)
-					<input class="slider" type="range" id="density" min="10" max="200" step="10" disabled="true">
+					Graph Density:
+					<input class="slider" type="range" id="density" min="1" max="10" step="1">
 					<br>
 				</div>
 				<div class="control_pair">
@@ -57,25 +57,25 @@
 		</div>
 		<div class="control_block">
 			<div class="control_set">
-				<h3>Graph Type (disabled)</h3>
+				<h3>Graph Type</h3>
 				<br>
 				<input type="radio" name="graph_type" value="tree" checked="checked">
 				Tree
 				<br>
 				<input type="radio" name="graph_type" value="rand_tree"> 
-				Random Tree
+				<s>Random Tree</s>
 				<br>
 				<input type="radio" name="graph_type" value="random"> 
 				Random
 				<br>
 				<input type="radio" name="graph_type" value="edge_weighted"> 
-				Edge Weigthed
+				<s>Edge Weigthed</s>
 				<br>
 				<input type="radio" name="graph_type" value="network"> 
-				Network
+				<s>Network</s>
 				<br>
 				<input type="radio" name="graph_type" value="colored"> 
-				Colored
+				<s>Colored</s>
 				<br>
 			</div>
 		</div>		
@@ -204,6 +204,7 @@
 		</div>
 	</div>
 	<script type="text/javascript" src="tree.js"></script>
+	<script type="text/javascript" src="graph.js"></script>
 	<script type="text/javascript" src="visualizer.js"></script>
 </body>
 </html>
