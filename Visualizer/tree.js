@@ -70,10 +70,11 @@ function tree_bfs_animation() {
 	//add initial graph to frame set
 	let graph_nodes = [god_nodes, BLACK];
 	let graph_edges = [god_edges, BLACK];
-	frames.push([
-		[graph_nodes],
-		[graph_edges]
-	]);
+
+	frames.push({
+		nodes: [graph_nodes],
+		edges: [graph_edges]
+	});
 	//create animation frames
 	while(open.length > 0) {
 		let current_node = open.shift();
@@ -86,13 +87,13 @@ function tree_bfs_animation() {
 			let path = find_path_set(current_node);
 			let search_nodes = path.nodes;
 			let search_edges = path.edges;
-			let search_node_set = [search_nodes, ORANGE]
-			let search_edge_set = [search_edges, ORANGE]
+			let search_node_set = [search_nodes, RED]
+			let search_edge_set = [search_edges, RED]
 			//add frame to animation
-			frames.push([
-				[closed_node_set, search_node_set], 
-				[search_edge_set]]
-			);
+			frames.push({
+				nodes: [graph_nodes, closed_node_set, search_node_set], 
+				edges: [graph_edges, search_edge_set]
+			});
 			break;
 		//check if past end (should never happen)
 		} else if (current_node_index > num_of_nodes) {
@@ -110,17 +111,19 @@ function tree_bfs_animation() {
 				index: current_child_index
 			});
 		}
+		//generate frame
 		let closed_node_set = [closed.slice(0), GREEN];
 		let path = find_path_set(current_node);
 		let search_nodes = path.nodes;
 		let search_edges = path.edges;
 		let search_node_set = [search_nodes, YELLOW];
 		let search_edge_set = [search_edges, YELLOW];
+
 		//add frame to animation containing 3 node colors and edge set
-		frames.push([
-			[graph_nodes, goal_node_set, closed_node_set, search_node_set, ], 
-			[graph_edges, search_edge_set]]
-			);
+		frames.push({
+			nodes: [graph_nodes, goal_node_set, closed_node_set, search_node_set, ], 
+			edges: [graph_edges, search_edge_set]
+			});
 		//add current to closed set
 		closed.push(current_node_coord);
 	}
@@ -132,40 +135,61 @@ function tree_bfs_animation() {
 * animation for depth first searching algorithm on a tree
 */
 function tree_dfs_animation() {
-   	let num_of_nodes = generate_tree();
-	draw_tree(node_center_list);
-	
+	let num_of_nodes = generate_tree();
+	frames.length = 0;
 	//create a valid goal index
 	let goal_index = find_goal_index();
-	let goal_coord = [node_center_list[goal_index][0], node_center_list[goal_index][1]];
+	let goal_coord = [god_nodes[goal_index][0], god_nodes[goal_index][1]];
 	//draw goal square red
-	let goal_node_set = [goal_coord, RED];
+	let goal_node_set = [[goal_coord], RED];
 
 	let open = [];
 	let closed = [];
 	let goal_not_found = true;
 
 	open.unshift({
-		coord: node_center_list[0], //add root to open set
+		coord: god_nodes[0], //add root to open set
 		parent: null,
-		index: 0
-	})
+		index: 0,
+		depth: 0
+	});
+
+	//add initial graph to frame set
+	let graph_nodes = [god_nodes, BLACK];
+	let graph_edges = [god_edges, BLACK];
+
+	frames.push({
+		nodes: [graph_nodes],
+		edges: [graph_edges]
+	});
 	//create animation frames
-	while(open_set.length > 0) {
-		let current_node = open_set.pop();
-		let current_node_coord = current_node.node_coord;
+	while(open.length > 0) {
+		let current_node = open.pop();
+		let current_node_coord = current_node.coord;
 		let current_node_index = current_node.index;
+		let current_depth = current_node.depth;
+
+		if(current_depth == depth) {
+			continue;
+		}
+
 		//check if goal
 		if (current_node_index == goal_index) {
 			//repaint closed set (viewed nodes)
-			paint_set(GREEN, closed)
-			//paint successful path orange
-			paint_set(ORANGE, find_path_set(closed, current_node));
+			let closed_node_set = [closed, GREEN];
+			let path = find_path_set(current_node);
+			let search_nodes = path.nodes;
+			let search_edges = path.edges;
+			let search_node_set = [search_nodes, RED]
+			let search_edge_set = [search_edges, RED]
+			//add frame to animation
+			frames.push({
+				nodes: [graph_nodes, closed_node_set, search_node_set], 
+				edges: [graph_edges, search_edge_set]
+			});
 			break;
 		//check if past end (should never happen)
-		} else if (current_node_index > num_of_nodes) {
-			break;
-		}
+		} 
 
 		//add branching_factor number children to open set
 		for (let i=branching_factor;i>0;i--) {
@@ -175,21 +199,28 @@ function tree_dfs_animation() {
 			open.push({
 				coord: current_child_coord,
 				parent: current_node,
-				index: current_child_index
+				index: current_child_index,
+				depth: current_depth + 1
 			});
 		}
-
-		let  closed_node_set = [closed, GREEN];
+		//generate frame
+		let closed_node_set = [closed.slice(0), GREEN];
 		let path = find_path_set(current_node);
-		let search_nodes = path.node_set;
-		let search_edges = path.edge_set;
-		let search_node_set = [search_nodes, ORANGE]
-		let search_edge_set = [search_edges, ORANGE]
-		//add frame to animation
-		frames.push([[goal_node_set, search_node_set, closed_node_set], [search_edge_set]])
+		let search_nodes = path.nodes;
+		let search_edges = path.edges;
+		let search_node_set = [search_nodes, YELLOW];
+		let search_edge_set = [search_edges, YELLOW];
+
+		//add frame to animation containing 3 node colors and edge set
+		frames.push({
+			nodes: [graph_nodes, goal_node_set, closed_node_set, search_node_set, ], 
+			edges: [graph_edges, search_edge_set]
+			});
 		//add current to closed set
-		closed_set.push(current_node_coord);
-	} 
+		closed.push(current_node_coord);
+	}
+	//animate frames created by BFS
+	animate();
 }
 
 /***************      HELPER FUNCTIONS FOR MAIN ANIMATIONS      ***************/
@@ -229,7 +260,7 @@ function find_path_set(node) {
 	//add root
 	node_set.push(god_nodes[0]);
 	return {
-		nodes: node_set,
-		edges: edge_set
+		nodes: node_set.slice(0),
+		edges: edge_set.slice(0)
 	};
 }

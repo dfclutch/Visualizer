@@ -40,12 +40,12 @@ let animation_timer;
 * sets representing full animation
 */
 function animate() {
-	clear_canvas();
 	animation_timer = setInterval( function() {
 		if (frames.length > 0) {
+			clear_canvas();
 			let current_frame = frames.shift();
-			let node_sets = current_frame[0];
-			let edge_sets = current_frame[1];
+			let node_sets = current_frame.nodes;
+			let edge_sets = current_frame.edges;
 			//draw edge sets
 			for (var i=0; i<edge_sets.length; i++){
 				let edge_set = edge_sets[i];
@@ -154,11 +154,11 @@ function draw_edge_set(edges, colors, text) {
 *	else: node has no text
 */
 function draw_node(node, color, text) {
+	context.beginPath();
 	context.fillStyle = color;
 	let min_x = node[0] - node_size;
 	let min_y = node[1] - node_size;
 	context.fillRect(min_x, min_y, node_size * 2, node_size * 2)
-
 	if (typeof text === "string") {
 		context.font = (node_size * 3).toString() + "px Arial";
 		context.textAlign = "center";
@@ -179,12 +179,16 @@ function draw_node(node, color, text) {
 *	else: edge has no text
 */
 function draw_edge(node1, node2, color, text) {
-	context.lineWidth = .5;
+	context.beginPath();
+	if (color == BLACK) {
+		context.lineWidth = .2;
+	} else {
+		context.lineWidth = 1;
+	}
+	context.strokeStyle = color;
 	context.moveTo(node1[0], node1[1]);
 	context.lineTo(node2[0], node2[1]);
-	context.fillStyle = color;
 	context.stroke();
-
 	if (typeof text == "string") {
 		context.font = (node_size * 3).toString() + "px Arial";
 		context.textAlign = "center";
@@ -217,49 +221,58 @@ let ORANGE = "#ff7c1e";
 * Handle branching factor, depth slider, and start button updates
 */
 branching_factor_update = function() {
-    branching_factor = branching_factor_element.valueAsNumber;
+	clear_canvas();
    	end_animation();
+    branching_factor = branching_factor_element.valueAsNumber;
    	generate();
    	draw_node_set(god_nodes, BLACK);
    	draw_edge_set(god_edges, BLACK);
 }
 
 depth_update = function() {
+	clear_canvas();
+   	end_animation();
     depth = depth_element.valueAsNumber;
     stretch_height = canvas.height / depth;
-   	end_animation();
    	generate();
    	draw_node_set(god_nodes, BLACK);
    	draw_edge_set(god_edges, BLACK);
 }
 
 density_update = function() {
-    density = density_element.valueAsNumber;
+	clear_canvas();
    	end_animation();
+    density = density_element.valueAsNumber;
     generate_new_edge_set();
     draw_edge_set(god_edges, BLACK);
 }
 
 window_width_update = function() {
-	canvas.width = window_width_element.valueAsNumber;
+	clear_canvas();
    	end_animation();
+	canvas.width = window_width_element.valueAsNumber;
    	generate();
    	draw_node_set(god_nodes, BLACK);
    	draw_edge_set(god_edges, BLACK);
 }
 
 node_size_update = function() {
-	node_size = node_size_element.valueAsNumber;
+	clear_canvas();
    	end_animation();
-   	draw_node_set(god_nodes, BLACK);
+	node_size = node_size_element.valueAsNumber;
+	draw_node_set(god_nodes, BLACK);
+	draw_edge_set(god_edges, BLACK);
+	animate();
 }
 
 speed_update = function() {
-	speed = 500 - speed_element.valueAsNumber;
    	end_animation();
+	speed = 500 - speed_element.valueAsNumber;
+	animate();
 }
 
 graph_type_update = function() {
+	clear_canvas();
 	for (var i =0;i<graph_type_elements.length; i++) {
 		let option = graph_type_elements[i];
 		if (option.checked) {
@@ -268,11 +281,9 @@ graph_type_update = function() {
 	}
 	end_animation();
 	generate();
-	draw_node_set(god_nodes);
-	draw_edge_set(god_edges);
+	draw_node_set(god_nodes, BLACK);
+	draw_edge_set(god_edges, BLACK);
 }
-
-
 
 /**********			Event listener Registration			**********/
 
