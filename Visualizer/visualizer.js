@@ -53,7 +53,7 @@ function animate() {
 			}
 			//draw node sets
 			for (var j=0; j<node_sets.length; j++) {
-				let node_set = node_sets[j]
+				let node_set = node_sets[j];
 				draw_node_set(node_set[0], node_set[1], node_set[2]);
 			}
 		} else {
@@ -85,19 +85,19 @@ function end_animation() {
 *	otherwise if typeof text is undefined: then the text of the square representing nodes[i] has no text
 */
 function draw_node_set(nodes, colors, text) {
-	if (typeof colors == "array") {
-		if(typeof text =="array") {
+	if (Array.isArray(text)) {
+		if(Array.isArray(colors)) {
 			for (var i=0;i<nodes.length;i++) {
 				draw_node(nodes[i], colors[i], text[i]);
 			}
-		} else {
-			for (var i=0;i<nodes.length;i++) {
-				draw_node(nodes[i], colors[i]);
+		} else { // colors is string, text is array
+			for (var j=0;j<nodes.length;j++) {
+				draw_node(nodes[j], colors, text[j]);
 			}
 		}
-	} else {
-		for(var i=0; i<nodes.length; i++) {
-			draw_node(nodes[i], colors);
+	} else { // no text 1 color
+		for(var k=0; k<nodes.length; k++) {
+			draw_node(nodes[k], colors);
 		}
 	}
 }
@@ -159,7 +159,7 @@ function draw_node(node, color, text) {
 	let min_x = node[0] - node_size;
 	let min_y = node[1] - node_size;
 	context.fillRect(min_x, min_y, node_size * 2, node_size * 2)
-	if (typeof text === "string") {
+	if (typeof text != "undefined") {
 		context.font = (node_size * 3).toString() + "px Arial";
 		context.textAlign = "center";
 		context.fillText(text, node[0] - 3 * node_size, node[1] + node_size);
@@ -323,7 +323,7 @@ let speed = speed_element.valueAsNumber;
 speed_element.addEventListener("change", speed_update, false);
 
 let mini_start_button = document.getElementById("mini_start_button");
-//mini_start_button.addEventListener("click", minimax_animation, false);
+mini_start_button.addEventListener("click", minimax_animation, false);
 
 let graph_type_elements= document.getElementsByName("graph_type");
 let graph_type = "tree";
