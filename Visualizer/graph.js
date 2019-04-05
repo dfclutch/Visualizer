@@ -11,7 +11,7 @@
 /***************      GRAPH GENERATION     ***************/
 
 function generate_graph() {
-	node_center_list.length = 0;
+	god_nodes.length = 0;
 	let num_of_nodes = branching_factor * depth;
 
 	for(var i=0; i<num_of_nodes; i++) {
@@ -23,13 +23,13 @@ function generate_graph() {
 }
 
 function generate_edge_set() {
-	edges.length = 0;
-	for(var i=0; i<node_center_list.length; i++) {
-		let current_node = node_center_list[i];
+	god_edges.length = 0;
+	for(var i=0; i<god_nodes.length; i++) {
+		let current_node = god_nodes[i];
 		//generate rand number of children between 0 and density
 		let num_connected = density + (Math.floor(Math.random() * density / 2));
 		for (var j=0; j<num_connected; j++){
-			let connected_node = node_center_list[Math.floor(Math.random() * node_center_list.length)];
+			let connected_node = god_nodes[Math.floor(Math.random() * god_nodes.length)];
 			//add num_connected number of connected nodes to edges list
 			god_edges.push([current_node, connected_node]);
 		}
@@ -38,3 +38,6 @@ function generate_edge_set() {
 
 
 /***************      GRAPH ANIMATIONS     ***************/
+function graph_bfs_animation() {
+
+}

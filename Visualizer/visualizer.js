@@ -17,8 +17,8 @@ let god_edges = [];
 
 /* 
 * Frames - an array representing a graph state at a single time 
-* Entries are [node_set, edge_set] pairs where node_set and edge_set 
-* are valid node/edge sets consisting of coordinates, colors, and text
+* Entries are [node_sets, edge_sets] pairs where node_set and edge_set 
+* are arrays of valid node/edge sets consisting of coordinates, colors, and text
 */
 let frames = [];
 
@@ -243,8 +243,9 @@ density_update = function() {
 	clear_canvas();
    	end_animation();
     density = density_element.valueAsNumber;
-    generate_new_edge_set();
+    generate_edge_set();
     draw_edge_set(god_edges, BLACK);
+    draw_node_set(god_nodes, BLACK);
 }
 
 window_width_update = function() {
