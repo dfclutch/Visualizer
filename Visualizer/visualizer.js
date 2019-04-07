@@ -280,11 +280,11 @@ graph_type_update = function() {
 			graph_type = option.value;
 		}
 	}
+	update_options();
 	end_animation();
 	generate();
 	draw_node_set(god_nodes, BLACK);
 	draw_edge_set(god_edges, BLACK);
-	update_options();
 }
 
 /**********			Event listener Registration			**********/
@@ -400,6 +400,9 @@ function update_options() {
 			bfs_start_button.style.textDecoration = "none";
 			dfs_start_button.style.textDecoration = "none";
 			mini_start_button.style.textDecoration = "none";
+			branching_factor_element.value = branching_factor = 2;
+			depth_element.value = depth = 6;
+			stretch_height = Math.floor((canvas.height - top_and_bottom_margin) / depth);
 			depth_element.max = 10;
 			branching_factor_element.max = 9;
 			break;
