@@ -183,7 +183,7 @@ function draw_edge(node1, node2, color, text) {
 	if (color == BLACK) {
 		context.lineWidth = .2;
 	} else {
-		context.lineWidth = 1;
+		context.lineWidth = 2;
 	}
 	context.strokeStyle = color;
 	context.moveTo(node1[0], node1[1]);
@@ -209,7 +209,7 @@ function clear_canvas() {
 */
 let BLACK = "#000000";
 let RED = "#ff1c1c";
-let BLUE = "#3065ba";
+let BLUE = "#16a6ff";
 let GREEN = "#28d67c";
 let YELLOW = "#ffd11c";
 let WHITE = "#FFFFFF";
@@ -284,6 +284,7 @@ graph_type_update = function() {
 	generate();
 	draw_node_set(god_nodes, BLACK);
 	draw_edge_set(god_edges, BLACK);
+	update_options();
 }
 
 /**********			Event listener Registration			**********/
@@ -336,6 +337,11 @@ for (var i =0;i<graph_type_elements.length; i++) {
 	option.addEventListener("change", graph_type_update, false);
 }
 
+let text_output = document.getElementById("text_output");
+
+let new_graph_button = document.getElementById("new_graph");
+new_graph_button.addEventListener("click", graph_type_update, false);
+
 /**********			Option Muliplexers			**********/
 
 function generate() {
@@ -373,6 +379,36 @@ function dfs_animation() {
 			break;
 		case "random": 
 			graph_dfs_animation();
+			break;
+		default:
+	}
+}
+
+function minimax_animation() {
+	end_animation();
+	switch(graph_type) {
+		case "tree":
+			tree_minimax_animation();
+			break;
+		default:
+	}
+}
+
+function update_options() {
+	switch(graph_type) {
+		case "tree":
+			bfs_start_button.style.textDecoration = "none";
+			dfs_start_button.style.textDecoration = "none";
+			mini_start_button.style.textDecoration = "none";
+			depth_element.max = 10;
+			branching_factor_element.max = 9;
+			break;
+		case "random":
+			bfs_start_button.style.textDecoration = "none";
+			dfs_start_button.style.textDecoration = "none";
+			mini_start_button.style.textDecoration = "line-through";
+			depth_element.max = 25;
+			branching_factor_element.max = 35;
 			break;
 		default:
 	}
