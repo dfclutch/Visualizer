@@ -224,6 +224,21 @@ branching_factor_update = function() {
 	clear_canvas();
    	end_animation();
     branching_factor = branching_factor_element.valueAsNumber;
+   	if (graph_type == "tree") {
+   		if (branching_factor >= 3) {
+   			depth_element.max = 8;
+   			depth_element.value = depth = 5;
+   		} 
+   		if (branching_factor > 4) {
+   			depth_element.max = 4;
+   			depth_element.value = depth = 3;
+
+   		} else {
+   			density_element.max = 10;
+   		}
+   		stretch_height = Math.floor((canvas.height - top_and_bottom_margin) / depth);
+			
+   	}
    	generate();
    	draw_node_set(god_nodes, BLACK);
    	draw_edge_set(god_edges, BLACK);
@@ -410,6 +425,7 @@ function update_options() {
 			bfs_start_button.style.textDecoration = "none";
 			dfs_start_button.style.textDecoration = "none";
 			mini_start_button.style.textDecoration = "line-through";
+			density_element.value = density = 2;
 			depth_element.max = 25;
 			branching_factor_element.max = 35;
 			break;
@@ -434,7 +450,7 @@ node_size_element.value = node_size = 6;
 speed = 100;
 speed_element.value = 400;
 
-density = 2;
+density_element.value = density = 2;
 graph_type = "tree";
 
 // load initial visual
