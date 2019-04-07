@@ -118,26 +118,18 @@ function draw_node_set(nodes, colors, text) {
 *	otherwise if typeof text is undefined: then the text of the edge representing edges[i] has no text
 */
 function draw_edge_set(edges, colors, text) {
-	if(typeof colors == "array") {
-		if (typeof text == "array"){
-			for (var i=0; i<edges.length; i++) {
-				let node1 = edges[i][0];
-				let node2 = edges[i][1];
-				draw_edge(node1, node2, colors[i], text[i]);
-			}
+
+	for (var i=0; i<edges.length; i++) {
+		let params = [edges[i][0], edges[i][1]]; //params array to get fed to draw method
+		if (typeof colors == "object") {
+			params.push(colors[i]);
 		} else {
-			for (var i=0; i<edges.length; i++) {
-				let node1 = edges[i][0];
-				let node2 = edges[i][1];
-				draw_edge(node1, node2, colors[i]);
-			}
+			params.push(colors);
 		}
-	} else {
-		for (var i=0; i<edges.length; i++) {
-				let node1 = edges[i][0];
-				let node2 = edges[i][1];
-				draw_edge(node1, node2, colors);
+		if (typeof text == "object") {
+			params.push(text[i]);
 		}
+		draw_edge(...params);
 	}
 }
 
@@ -160,6 +152,7 @@ function draw_node(node, color, text) {
 	let min_y = node[1] - node_size;
 	context.fillRect(min_x, min_y, node_size * 2, node_size * 2)
 	if (typeof text != "undefined") {
+		context.beginPath();
 		context.font = (node_size * 3).toString() + "px Arial";
 		context.textAlign = "center";
 		context.fillText(text, node[0] - 3 * node_size, node[1] + node_size);
@@ -190,10 +183,11 @@ function draw_edge(node1, node2, color, text) {
 	context.lineTo(node2[0], node2[1]);
 	context.stroke();
 	if (typeof text == "string") {
+		context.beginPath();
 		context.font = (node_size * 3).toString() + "px Arial";
 		context.textAlign = "center";
 		context.fillText(
-			text, Math.floor((node1[0] + node2[0])/2) - 20, 
+			text, Math.floor((node1[0] + node2[0])/2) - 10, 
 			Math.floor((node1[1] + node2[1])/2)
 		);
 	}
@@ -298,8 +292,8 @@ graph_type_update = function() {
 	update_options();
 	end_animation();
 	generate();
-	draw_node_set(god_nodes, BLACK);
-	draw_edge_set(god_edges, BLACK);
+	draw_node_set(god_nodes, BLACK,);
+	draw_edge_set(god_edges, BLACK, god_weights);
 }
 
 /**********			Event listener Registration			**********/
@@ -342,6 +336,10 @@ speed_element.addEventListener("change", speed_update, false);
 let mini_start_button = document.getElementById("mini_start_button");
 mini_start_button.addEventListener("click", minimax_animation, false);
 
+
+let maxflow_start_button = document.getElementById("maxflow_start_button");
+maxflow_start_button.addEventListener("click", maxflow_animation, false);
+
 let graph_type_elements= document.getElementsByName("graph_type");
 let graph_type = "tree";
 for (var i =0;i<graph_type_elements.length; i++) {
@@ -370,6 +368,11 @@ function generate() {
 			generate_edge_set();
 			break;
 		default:
+		case "edge_weighted":
+			generate_graph();
+			generate_edge_set();
+			generate_edge_weights();
+			break;
 	}
 }
 
@@ -409,6 +412,14 @@ function minimax_animation() {
 	}
 }
 
+function maxflow_animation() {
+	end_animation();
+	switch(graph_type) {
+		case "edge_weighted":
+			ew_maxflow_animation();
+	}
+}
+
 function update_options() {
 	switch(graph_type) {
 		case "tree":
@@ -424,6 +435,14 @@ function update_options() {
 		case "random":
 			bfs_start_button.style.textDecoration = "none";
 			dfs_start_button.style.textDecoration = "none";
+			mini_start_button.style.textDecoration = "line-through";
+			density_element.value = density = 2;
+			depth_element.max = 25;
+			branching_factor_element.max = 35;
+			break;
+		case "edge_weighted":
+			bfs_start_button.style.textDecoration = "line-through";
+			dfs_start_button.style.textDecoration = "line-through";
 			mini_start_button.style.textDecoration = "line-through";
 			density_element.value = density = 2;
 			depth_element.max = 25;
