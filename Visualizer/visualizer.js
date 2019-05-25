@@ -25,6 +25,9 @@ let frames = [];
 /* main animation */
 let animation_timer;
 
+/* tracks if current graph type requires edge direction */
+let undirected = true;
+
 
 /**********			Main Graphics Engine			**********/
 /* 
@@ -85,20 +88,17 @@ function end_animation() {
 *	otherwise if typeof text is undefined: then the text of the square representing nodes[i] has no text
 */
 function draw_node_set(nodes, colors, text) {
-	if (Array.isArray(text)) {
-		if(Array.isArray(colors)) {
-			for (var i=0;i<nodes.length;i++) {
-				draw_node(nodes[i], colors[i], text[i]);
-			}
-		} else { // colors is string, text is array
-			for (var j=0;j<nodes.length;j++) {
-				draw_node(nodes[j], colors, text[j]);
-			}
+	for (var i=0; i<nodes.length; i++) {
+		let params = [[nodes[i][0], nodes[i][1]]]; //params array to get fed to draw method
+		if (typeof colors == "object") {
+			params.push(colors[i]);
+		} else {
+			params.push(colors);
 		}
-	} else { // no text 1 color
-		for(var k=0; k<nodes.length; k++) {
-			draw_node(nodes[k], colors);
+		if (typeof text == "object") {
+			params.push(text[i]);
 		}
+		draw_node(...params);
 	}
 }
 
@@ -118,7 +118,6 @@ function draw_node_set(nodes, colors, text) {
 *	otherwise if typeof text is undefined: then the text of the edge representing edges[i] has no text
 */
 function draw_edge_set(edges, colors, text) {
-
 	for (var i=0; i<edges.length; i++) {
 		let params = [edges[i][0], edges[i][1]]; //params array to get fed to draw method
 		if (typeof colors == "object") {
@@ -129,7 +128,11 @@ function draw_edge_set(edges, colors, text) {
 		if (typeof text == "object") {
 			params.push(text[i]);
 		}
-		draw_edge(...params);
+		if (undirected) {
+			draw_edge(...params);
+		} else {
+			draw_directed_edge(...params)
+		}
 	}
 }
 
@@ -168,7 +171,8 @@ function draw_node(node, color, text) {
 * - color:
 *	string representing color in hex or rgba e.g. "#______" or "rgba{_,_,_,_}"
 * - text:
-*	optional: if typeof text == string: then edge has text {text} attached
+*	optional: if typeof text != string: then edge tries to have text {text} attached using
+*	default .toString, if fails, sorry, shoulda used a string
 *	else: edge has no text
 */
 function draw_edge(node1, node2, color, text) {
@@ -182,17 +186,44 @@ function draw_edge(node1, node2, color, text) {
 	context.moveTo(node1[0], node1[1]);
 	context.lineTo(node2[0], node2[1]);
 	context.stroke();
-	if (typeof text == "string") {
+	if (typeof text != "undefined") {
 		context.beginPath();
 		context.font = (node_size * 3).toString() + "px Arial";
 		context.textAlign = "center";
 		context.fillText(
-			text, Math.floor((node1[0] + node2[0])/2) - 10, 
+			text.toString(), Math.floor((node1[0] + node2[0])/2) - 10, 
 			Math.floor((node1[1] + node2[1])/2)
 		);
 	}
 }
 
+
+function draw_directed_edge(node1, node2, color, text) {
+	context.beginPath();
+	if (color == BLACK) {
+		context.lineWidth = .2;
+	} else {
+		context.lineWidth = 2;
+	}
+	context.strokeStyle = color;
+	context.moveTo(node1[0], node1[1]);
+	context.lineTo(node2[0], node2[1]);
+	context.stroke();
+	if (typeof text != "undefined") {
+		context.beginPath();
+		context.font = (node_size * 3).toString() + "px Arial";
+		context.textAlign = "center";
+		context.fillText(
+			text.toString(), Math.floor((node1[0] + node2[0])/2) - 10, 
+			Math.floor((node1[1] + node2[1])/2)
+		);
+	}
+	let midpt = [((node1[0]+node2[0])/2), ((node1[1]+node2[1])/2)];
+	let slope = (node1[1] - node2[1]) / (node1[0] - node2[0]);
+	//draw arrow at midpoint
+
+
+}
 
 function clear_canvas() {
 	context.clearRect(0,0,canvas.width, canvas.height);
@@ -228,14 +259,15 @@ branching_factor_update = function() {
    			depth_element.value = depth = 3;
 
    		} else {
-   			density_element.max = 10;
+   			depth_element.max = 10;
    		}
    		stretch_height = Math.floor((canvas.height - top_and_bottom_margin) / depth);
 			
    	}
-   	generate();
-   	draw_node_set(god_nodes, BLACK);
-   	draw_edge_set(god_edges, BLACK);
+   	generate_nodes();
+   	generate_edges();
+   	draw_node_set(god_nodes, BLACK,);
+   	draw_edge_set(god_edges, BLACK, god_weights);
 }
 
 depth_update = function() {
@@ -243,27 +275,29 @@ depth_update = function() {
    	end_animation();
     depth = depth_element.valueAsNumber;
     stretch_height = canvas.height / depth;
-   	generate();
+   	generate_nodes();
+   	generate_edges();
    	draw_node_set(god_nodes, BLACK);
-   	draw_edge_set(god_edges, BLACK);
+   	draw_edge_set(god_edges, BLACK, god_weights);
 }
 
 density_update = function() {
 	clear_canvas();
    	end_animation();
     density = density_element.valueAsNumber;
-    generate_edge_set();
+    generate_edges();
     draw_edge_set(god_edges, BLACK);
-    draw_node_set(god_nodes, BLACK);
+    draw_node_set(god_nodes, BLACK, god_weights);
 }
 
 window_width_update = function() {
 	clear_canvas();
    	end_animation();
 	canvas.width = window_width_element.valueAsNumber;
-   	generate();
+   	generate_nodes();
+   	generate_edges();
    	draw_node_set(god_nodes, BLACK);
-   	draw_edge_set(god_edges, BLACK);
+   	draw_edge_set(god_edges, BLACK, god_weights);
 }
 
 node_size_update = function() {
@@ -271,7 +305,7 @@ node_size_update = function() {
    	end_animation();
 	node_size = node_size_element.valueAsNumber;
 	draw_node_set(god_nodes, BLACK);
-	draw_edge_set(god_edges, BLACK);
+	draw_edge_set(god_edges, BLACK, god_weights);
 	animate();
 }
 
@@ -291,9 +325,10 @@ graph_type_update = function() {
 	}
 	update_options();
 	end_animation();
-	generate();
+	generate_nodes();
+	generate_edges();
 	draw_node_set(god_nodes, BLACK,);
-	draw_edge_set(god_edges, BLACK, god_weights);
+	draw_edge_set(god_edges, BLACK, god_weights, god_weights);
 }
 
 /**********			Event listener Registration			**********/
@@ -357,22 +392,46 @@ new_graph_button.addEventListener("click", graph_type_update, false);
 
 /**********			Option Muliplexers			**********/
 
-function generate() {
+function generate_nodes() {
+	god_nodes.length = 0;
 	switch(graph_type) {
 		case "tree":
 			generate_tree();
+			break;
+		case "random": 
+			generate_random_graph();
+			break;
+		case "nice":
+			generate_nice_graph();
+			break;
+		case "edge_weighted":
+			generate_random_graph();
+			break;
+
+		default:
+	}
+}
+
+function generate_edges() {
+	god_edges.length = 0;
+	god_weights.length = 0;
+	god_rels.length = 0;
+	switch(graph_type) {
+		case "tree":
 			generate_tree_edges();
 			break;
 		case "random": 
-			generate_graph();
-			generate_edge_set();
+			generate_random_edge_set();
 			break;
-		default:
+		case "nice":
+			generate_random_edge_set();
+			break;
 		case "edge_weighted":
-			generate_graph();
-			generate_edge_set();
+			generate_random_edge_set();
 			generate_edge_weights();
 			break;
+
+		default:
 	}
 }
 
@@ -426,28 +485,54 @@ function update_options() {
 			bfs_start_button.style.textDecoration = "none";
 			dfs_start_button.style.textDecoration = "none";
 			mini_start_button.style.textDecoration = "none";
+			maxflow_start_button.style.textDecoration = "line-through";
 			branching_factor_element.value = branching_factor = 2;
 			depth_element.value = depth = 6;
 			stretch_height = Math.floor((canvas.height - top_and_bottom_margin) / depth);
 			depth_element.max = 10;
 			branching_factor_element.max = 9;
+			undirected = true;
 			break;
 		case "random":
 			bfs_start_button.style.textDecoration = "none";
 			dfs_start_button.style.textDecoration = "none";
 			mini_start_button.style.textDecoration = "line-through";
+			maxflow_start_button.style.textDecoration = "line-through";
 			density_element.value = density = 2;
 			depth_element.max = 25;
 			branching_factor_element.max = 35;
+			undirected = true;
+			break;
+		case "nice":
+			bfs_start_button.style.textDecoration = "none";
+			dfs_start_button.style.textDecoration = "none";
+			mini_start_button.style.textDecoration = "line-through";
+			maxflow_start_button.style.textDecoration = "line-through";
+			density_element.value = density = 2;
+			depth_element.max = 6;
+			depth_element.value = depth = 2;
+			branching_factor_element.value = branching_factor = 2;
+			undirected = true;
 			break;
 		case "edge_weighted":
 			bfs_start_button.style.textDecoration = "line-through";
 			dfs_start_button.style.textDecoration = "line-through";
 			mini_start_button.style.textDecoration = "line-through";
+			maxflow_start_button.style.textDecoration = "none";
 			density_element.value = density = 2;
 			depth_element.max = 25;
 			branching_factor_element.max = 35;
+			undirected = true;
 			break;
+		case "network":
+			bfs_start_button.style.textDecoration = "line-through";
+			dfs_start_button.style.textDecoration = "line-through";
+			mini_start_button.style.textDecoration = "line-through";
+			maxflow_start_button.style.textDecoration = "none";
+			density_element.value = density = 2;
+			depth_element.max = 25;
+			branching_factor_element.max = 35;
+			undirected = false;
 		default:
 	}
 }
@@ -474,7 +559,9 @@ graph_type = "tree";
 
 // load initial visual
 window.onload = function() {
-	generate();
+	update_options();
+	generate_nodes();
+	generate_edges();
 	draw_node_set(god_nodes, BLACK);
-	draw_edge_set(god_edges, BLACK);
+	draw_edge_set(god_edges, BLACK, god_weights);
 }

@@ -12,14 +12,15 @@
 /*
 * special global for graphs, allows easy tracking of relationships
 *
-* Entry at god_rels[i] is arrays of indexes (in god_nodes) of children of god_nodes[i]
+* Entry at god_weights[i] is integer representing the weight at god_edges[i]
 */
 let god_weights = [];
 
 function generate_edge_weights() {
 	god_weights.length = 0;
 	for(var i=0; i<god_edges.length; i++) {
-		let edge_weight = Math.floor(Math.random() * 20).toString()
+		//generate random edge weight between -10
+		let edge_weight = (Math.floor(Math.random() * 20) - 10);
 		//add random weight to array
 		god_weights.push(edge_weight);
 	}
@@ -27,6 +28,3 @@ function generate_edge_weights() {
 
 /***************      GRAPH ANIMATIONS     ***************/
 
-function ew_maxflow_animation() {
-
-}

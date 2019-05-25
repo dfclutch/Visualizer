@@ -12,11 +12,11 @@
 /*
 * special global for graphs, allows easy tracking of relationships
 *
-* Entry at god_rels[i] is arrays of indexes (in god_nodes) of children of god_nodes[i]
+* Entry at god_rels[i] is an array of indexes (in god_nodes) of relationships (bi-directional) of god_nodes[i]
 */
 let god_rels = [];
 
-function generate_graph() {
+function generate_random_graph() {
 	god_nodes.length = 0;
 	let num_of_nodes = Math.floor(branching_factor * depth);
 
@@ -28,7 +28,7 @@ function generate_graph() {
 	}
 }
 
-function generate_edge_set() {
+function generate_random_edge_set() {
 	god_edges.length = 0;
 	god_rels.length = 0;
 	//regenerate empty array
@@ -53,8 +53,27 @@ function generate_edge_set() {
 	}
 }
 
+function generate_nice_graph() {
+	god_nodes.length = 0;
+	let num_of_nodes = Math.floor(branching_factor * depth);
+
+	//def boundaries in w
+	let l_offset = Math.floor(canvas.width * .1);
+	let node_width_spacing = Math.floor((canvas.width * .8) / 5);
+	let b_offset = Math.floor(canvas.height *.1);
+	let node_height_spacing = Math.floor((canvas.height *.8) / 5);
+
+	for(var i=0; i<num_of_nodes; i++) {
+		let new_x_coord = Math.floor(Math.random() * (6)) * node_width_spacing + l_offset;
+		let new_y_coord = Math.floor(Math.random() * (6)) * node_height_spacing + b_offset;
+		let new_coord = [new_x_coord, new_y_coord];
+		god_nodes.push(new_coord);
+	}
+}
+
 //populate god_rels with correct number of empty arrays
 function generate_god_rels() {
+	god_rels.length = 0;
 	for (var i=0; i<god_nodes.length; i++) {
 		god_rels.push([]);
 	}
