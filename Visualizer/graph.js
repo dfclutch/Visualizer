@@ -17,6 +17,7 @@
 let god_rels = [];
 
 function generate_random_graph() {
+	console.log("generate rand nodes");
 	god_nodes.length = 0;
 	let num_of_nodes = Math.floor(branching_factor * depth);
 
@@ -28,7 +29,7 @@ function generate_random_graph() {
 	}
 }
 
-function generate_random_edge_set() {
+function generate_random_edge_set() {	
 	god_edges.length = 0;
 	god_rels.length = 0;
 	//regenerate empty array
@@ -38,8 +39,8 @@ function generate_random_edge_set() {
 		let current_node = god_nodes[i];
 		//generate rand number of children between 0 and density
 		let num_connected = 1 + Math.floor(Math.random() * density);
-		var j = 0;
-		while (j < num_connected ){
+		var j = esc = 0;
+		while (j < num_connected && esc < god_nodes.length){
 			let connected_node_index = Math.floor(Math.random() * god_nodes.length);
 			//add num_connected number of connected nodes to edges list if not already existant
 			//and non-self relating
@@ -49,11 +50,13 @@ function generate_random_edge_set() {
 				god_rels[connected_node_index].push(i); //handshaking for non-directed edges
 				j++;
 			}
+			esc++;
 		}
 	}
 }
 
 function generate_nice_graph() {
+	console.log("generate nice nodes");
 	god_nodes.length = 0;
 	let num_of_nodes = Math.floor(branching_factor * depth);
 

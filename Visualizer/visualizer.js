@@ -131,7 +131,7 @@ function draw_edge_set(edges, colors, text) {
 		if (undirected) {
 			draw_edge(...params);
 		} else {
-			draw_directed_edge(...params)
+			draw_directed_edge(...params);
 		}
 	}
 }
@@ -229,6 +229,7 @@ function clear_canvas() {
 	context.clearRect(0,0,canvas.width, canvas.height);
 	context.beginPath();
 }
+
 /*
 * COLOR DEFINITIONS
 */
@@ -241,7 +242,6 @@ let WHITE = "#FFFFFF";
 let ORANGE = "#ff7c1e";
 
 /**********			Option updates			**********/
-
 /*
 * Handle branching factor, depth slider, and start button updates
 */
@@ -407,7 +407,6 @@ function generate_nodes() {
 		case "edge_weighted":
 			generate_random_graph();
 			break;
-
 		default:
 	}
 }
