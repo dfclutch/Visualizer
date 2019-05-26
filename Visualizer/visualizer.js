@@ -440,6 +440,7 @@ function bfs_animation() {
 		case "tree":
 			tree_bfs_animation();
 			break;
+		case "nice":
 		case "random": 
 			graph_bfs_animation();
 			break;
@@ -454,6 +455,7 @@ function dfs_animation() {
 			tree_dfs_animation();
 			break;
 		case "random": 
+		case "nice":
 			graph_dfs_animation();
 			break;
 		default:
